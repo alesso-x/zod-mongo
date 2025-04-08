@@ -72,7 +72,11 @@ await ZodMongoDatabaseConnection.setup({
   client,
   dbName: "my-database",
 });
+```
 
+## Connection Event Listeners
+
+```typescript
 // Listen for connection events
 ZodMongoDatabaseConnection.on("connected", () => {
   console.log("Connected to MongoDB");
@@ -84,7 +88,6 @@ ZodMongoDatabaseConnection.on("disconnected", () => {
 
 ZodMongoDatabaseConnection.on("error", (error) => {
   console.error("MongoDB connection error:", error);
-  process.exit(1);
 });
 ```
 
@@ -94,8 +97,7 @@ You can extend the `ZodMongoRepository` class to create custom repositories with
 
 ```typescript
 import { z } from "zod";
-import { ObjectId } from "mongodb";
-import { ZodMongoDocument, ZodMongoRepository } from "zod-mongo";
+import { ZodMongoDocument, ZodMongoRepository, ObjectId } from "zod-mongo";
 
 // Define your schema
 const userProfileSchema = z.object({
@@ -143,23 +145,25 @@ async function main() {
 
 ### Repository Methods
 
-The repository provides the same methods as the MongoDB client, with two additional methods:
-
-- `findOneStrict(filter, options?)`: Find a single document (throws if not found)
-- `exists(filter, options?)`: Check if documents exist
+The repository provides the same methods as the MongoDB client and adds some additional methods too:
 
 Standard MongoDB methods:
 
 - `insertOne(input, options?)`: Insert a single document
 - `insertMany(input[], options?)`: Insert multiple documents
 - `findOne(filter, options?)`: Find a single document
-- `find(filter, options?)`: Find multiple documents
-- `findCursor(filter, options?)`: Get a cursor for streaming results
+- `find(filter, options?)`: Get a cursor for streaming results
 - `updateOne(filter, update, options?)`: Update a single document
 - `updateMany(filter, update, options?)`: Update multiple documents
 - `findOneAndUpdate(filter, update, options)`: Find and update a document
 - `deleteOne(filter, options?)`: Delete a single document
 - `deleteMany(filter, options?)`: Delete multiple documents
+
+Additional methods
+
+- `findOneStrict(filter, options?)`: Find a single document (throws if not found)
+- `findMany(filter, options?)`: Find multiple documents (returns an array of results)
+- `exists(filter, options?)`: Check if documents exist
 
 ### Type Definitions
 

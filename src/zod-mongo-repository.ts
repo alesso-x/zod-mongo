@@ -140,7 +140,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @param options - Optional MongoDB find options.
    * @returns A promise that resolves to an array of found documents.
    */
-  async find(
+  async findMany(
     filter: StrictFilter<TSchema>,
     options?: FindOptions
   ): Promise<WithId<TSchema>[]> {
@@ -155,7 +155,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @param options - Optional MongoDB find options.
    * @returns A promise that resolves to a MongoDB cursor.
    */
-  async findCursor(
+  async find(
     filter: StrictFilter<TSchema>,
     options?: FindOptions
   ): Promise<FindCursor<WithId<TSchema>>> {
