@@ -21,10 +21,11 @@ npm install TODO
 
 ```typescript
 import { z } from "zod";
-import { ZodMongoRepository } from "zod-mongo";
+import { ZodMongoRepository, ObjectId } from "zod-mongo";
 
 // Define your schema using Zod
 const userSchema = z.object({
+  _id: z.instanceof(ObjectId),
   name: z.string(),
   email: z.string().email(),
   age: z.number().optional(),
@@ -59,27 +60,27 @@ Before using the repository, you need to connect to your MongoDB database. Here'
 
 ```typescript
 import { MongoClient } from "mongodb";
-import { zodMongoDatabaseConnection } from "zod-mongo";
+import { ZodMongoDatabaseConnection } from "zod-mongo";
 
 // Create MongoClient
 const client = new MongoClient("mongodb://localhost:27017");
 
-// Set the client for all repositories
-await zodMongoDatabaseConnection.setup({
+// Setup the database connection
+await ZodMongoDatabaseConnection.setup({
   client,
-  dbName: "zod-mongo-test",
+  dbName: "my-database",
 });
 
-// Listen to connection events
-zodMongoDatabaseConnection.on("connected", () => {
-  console.log("MongoDB connection established");
+// Listen for connection events
+ZodMongoDatabaseConnection.on("connected", () => {
+  console.log("Connected to MongoDB");
 });
 
-zodMongoDatabaseConnection.on("disconnected", () => {
-  console.warn("MongoDB connection lost");
+ZodMongoDatabaseConnection.on("disconnected", () => {
+  console.log("Disconnected from MongoDB");
 });
 
-zodMongoDatabaseConnection.on("error", (error) => {
+ZodMongoDatabaseConnection.on("error", (error) => {
   console.error("MongoDB connection error:", error);
   process.exit(1);
 });
@@ -99,12 +100,6 @@ const userProfileSchema = z.object({
   _id: z.instanceof(ObjectId),
   userId: z.string(),
   hasCompletedOnboarding: z.boolean(),
-  preferences: z
-    .object({
-      theme: z.enum(["light", "dark"]).optional(),
-      notifications: z.boolean().optional(),
-    })
-    .optional(),
 });
 
 type UserProfile = ZodMongoDocument<z.infer<typeof userProfileSchema>>;

@@ -21,7 +21,7 @@ import {
   type WithId,
 } from "mongodb";
 import { z } from "zod";
-import { zodMongoDatabaseConnection } from "./zod-mongo-database-connection";
+import { ZodMongoDatabaseConnection } from "./zod-mongo-database-connection";
 import { ZodDocumentNotFoundError } from "./errors";
 import { ZodMongoDocument, ZodMongoDocumentInput } from "./zod-mongo.types";
 
@@ -42,7 +42,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @returns A promise that resolves to the MongoDB collection.
    */
   async collection() {
-    const db = await zodMongoDatabaseConnection.ensureDb();
+    const db = await ZodMongoDatabaseConnection.ensureDb();
     return db.collection<TSchema>(this.collectionName);
   }
 

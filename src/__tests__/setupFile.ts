@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { zodMongoDatabaseConnection } from "..";
+import { ZodMongoDatabaseConnection } from "..";
 
 beforeAll(async () => {
   if (!global.__MONGOINSTANCE) {
@@ -8,14 +8,14 @@ beforeAll(async () => {
 
   const client = new MongoClient(global.__MONGOINSTANCE.getUri());
 
-  await zodMongoDatabaseConnection.setup({
+  await ZodMongoDatabaseConnection.setup({
     client,
     dbName: "zod-mongo-test",
   });
 
   // Clean up the database before each test file
-  if (zodMongoDatabaseConnection.isConnected()) {
-    const db = zodMongoDatabaseConnection.getDb();
+  if (ZodMongoDatabaseConnection.isConnected()) {
+    const db = ZodMongoDatabaseConnection.getDb();
     const collections = await db.listCollections().toArray();
     for (const collection of collections) {
       await db.collection(collection.name).deleteMany({});
@@ -25,7 +25,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Disconnect from the database
-  if (zodMongoDatabaseConnection.isConnected()) {
-    await zodMongoDatabaseConnection.disconnect();
+  if (ZodMongoDatabaseConnection.isConnected()) {
+    await ZodMongoDatabaseConnection.disconnect();
   }
 });

@@ -15,8 +15,8 @@ interface DatabaseOptions {
   retryDelay?: number;
 }
 
-class ZodMongoDatabaseConnection extends EventEmitter {
-  private static instance: ZodMongoDatabaseConnection;
+class ZodMongoDatabaseConnectionClass extends EventEmitter {
+  private static instance: ZodMongoDatabaseConnectionClass;
   private connection: MongoConnection = {
     db: null,
     client: null,
@@ -27,15 +27,16 @@ class ZodMongoDatabaseConnection extends EventEmitter {
   private retryDelay = 1000;
 
   /**
-   * Gets the singleton instance of ZodMongoDatabaseConnection.
+   * Gets the singleton instance of ZodMongoDatabaseConnectionClass.
    * If no instance exists, creates a new one.
-   * @returns The singleton instance of ZodMongoDatabaseConnection
+   * @returns The singleton instance of ZodMongoDatabaseConnectionClass
    */
-  public static getInstance(): ZodMongoDatabaseConnection {
-    if (!ZodMongoDatabaseConnection.instance) {
-      ZodMongoDatabaseConnection.instance = new ZodMongoDatabaseConnection();
+  public static getInstance(): ZodMongoDatabaseConnectionClass {
+    if (!ZodMongoDatabaseConnectionClass.instance) {
+      ZodMongoDatabaseConnectionClass.instance =
+        new ZodMongoDatabaseConnectionClass();
     }
-    return ZodMongoDatabaseConnection.instance;
+    return ZodMongoDatabaseConnectionClass.instance;
   }
 
   /**
@@ -190,5 +191,5 @@ class ZodMongoDatabaseConnection extends EventEmitter {
 }
 
 // Export the singleton instance
-export const zodMongoDatabaseConnection =
-  ZodMongoDatabaseConnection.getInstance();
+export const ZodMongoDatabaseConnection =
+  ZodMongoDatabaseConnectionClass.getInstance();
