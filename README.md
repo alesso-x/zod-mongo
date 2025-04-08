@@ -14,7 +14,7 @@ A thin wrapper around MongoDB that allows you to define your models using Zod sc
 ## Installation
 
 ```bash
-npm install TODO
+npm install zod-mongo
 ```
 
 ## Quick Start
