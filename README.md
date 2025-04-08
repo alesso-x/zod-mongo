@@ -145,7 +145,7 @@ async function main() {
 
 ### Repository Methods
 
-The repository provides the same methods as the MongoDB client and adds some additional methods too:
+The repository provides methods similar to the MongoDB client, plus some extra features to make things easier:
 
 Standard MongoDB methods:
 
@@ -166,6 +166,20 @@ Additional methods
 - `findOneStrict(filter, options?)`: Find a single document (throws if not found)
 - `findMany(filter, options?)`: Find multiple documents (returns an array of results)
 - `exists(filter, options?)`: Check if documents exist
+
+### Direct MongoDB Access
+
+In some cases, you might need to access the MongoDB collection directly to perform operations that are not covered by the `ZodMongoRepository` methods. For such cases, you can use the `collection` method, which provides direct access to the underlying MongoDB collection.
+
+```typescript
+// Access the MongoDB collection directly
+const collection = await userRepository.collection();
+
+// Use the collection to perform MongoDB operations
+document = await collection.stats();
+```
+
+This method serves as an escape hatch for advanced use cases where you need more control over the MongoDB operations.
 
 ### Type Definitions
 
