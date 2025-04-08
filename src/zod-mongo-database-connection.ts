@@ -25,6 +25,7 @@ class ZodMongoDatabaseConnectionClass extends EventEmitter {
   private connectionPromise: Promise<void> | null = null;
   private maxRetries = 5;
   private retryDelay = 1000;
+  private setupCalled = false;
 
   /**
    * Gets the singleton instance of ZodMongoDatabaseConnectionClass.
@@ -67,6 +68,8 @@ class ZodMongoDatabaseConnectionClass extends EventEmitter {
     }
 
     this.connectionPromise = this.establishConnection(options);
+    this.setupCalled = true;
+
     return this.connectionPromise;
   }
 
@@ -149,6 +152,11 @@ class ZodMongoDatabaseConnectionClass extends EventEmitter {
    * @throws ZodDatabaseNotConnectedError if the database connection cannot be established
    */
   public async ensureDb(): Promise<Db> {
+    if (!this.setupCalled) {
+      throw new Error(
+        "ZodMongoDatabaseConnection.setup() must be called before accessing the database"
+      );
+    }
     if (!this.connection.db) {
       await this.retryGetDb();
     }
