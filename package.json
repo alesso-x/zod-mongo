@@ -15,10 +15,10 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepare": "pnpm build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "typecheck": "tsc --noEmit",
-    "pack": "pnpm build && pnpm pack"
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "mongodb": ">=6.0.0 <7.0.0",
