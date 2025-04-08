@@ -1,0 +1,22 @@
+# Development files
+.git
+.gitignore
+node_modules
+pnpm-lock.yaml
+tsconfig.json
+
+# Test files
+test
+__tests__
+*.test.ts
+*.spec.ts
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build output
+dist
+*.tsbuildinfo
