@@ -19,6 +19,19 @@ A thin wrapper around MongoDB that allows you to define your models using Zod sc
 npm install zod-mongo
 ```
 
+### Peer Dependencies
+
+This package requires the following peer dependencies:
+
+- `zod`
+- `mongodb`
+
+Make sure to install them in your project:
+
+```bash
+npm install zod mongodb
+```
+
 ## Quick Start
 
 ```typescript
