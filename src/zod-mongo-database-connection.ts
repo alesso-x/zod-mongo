@@ -26,6 +26,11 @@ class ZodMongoDatabaseConnection extends EventEmitter {
   private maxRetries = 5;
   private retryDelay = 1000;
 
+  /**
+   * Gets the singleton instance of ZodMongoDatabaseConnection.
+   * If no instance exists, creates a new one.
+   * @returns The singleton instance of ZodMongoDatabaseConnection
+   */
   public static getInstance(): ZodMongoDatabaseConnection {
     if (!ZodMongoDatabaseConnection.instance) {
       ZodMongoDatabaseConnection.instance = new ZodMongoDatabaseConnection();
@@ -33,12 +38,25 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     return ZodMongoDatabaseConnection.instance;
   }
 
+  /**
+   * Private constructor to enforce singleton pattern.
+   * Sets a higher limit for max listeners since this is a singleton.
+   */
   private constructor() {
     super();
     // Set a higher limit for max listeners since this is a singleton
     this.setMaxListeners(20);
   }
 
+  /**
+   * Sets up the database connection with the provided options.
+   * @param options - Configuration options for the database connection
+   * @param options.client - The MongoDB client instance
+   * @param options.dbName - Name of the database to connect to
+   * @param options.maxRetries - Maximum number of connection retry attempts (optional)
+   * @param options.retryDelay - Delay between retry attempts in milliseconds (optional)
+   * @returns Promise that resolves when the connection is established
+   */
   public async setup(options: DatabaseOptions): Promise<void> {
     this.maxRetries = options.maxRetries ?? this.maxRetries;
     this.retryDelay = options.retryDelay ?? this.retryDelay;
@@ -51,6 +69,11 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     return this.connectionPromise;
   }
 
+  /**
+   * Establishes a connection to the MongoDB database with retry logic.
+   * @param options - Configuration options for the database connection
+   * @throws Error if all connection attempts fail
+   */
   private async establishConnection(options: DatabaseOptions): Promise<void> {
     if (this.connection.isConnected) {
       return;
@@ -92,6 +115,10 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Disconnects from the MongoDB database and cleans up resources.
+   * @returns Promise that resolves when the disconnection is complete
+   */
   public async disconnect(): Promise<void> {
     if (this.connection.client) {
       await this.connection.client.close();
@@ -103,6 +130,11 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Gets the database instance.
+   * @returns The MongoDB database instance
+   * @throws ZodDatabaseNotConnectedError if the database is not connected
+   */
   public getDb(): Db {
     if (!this.connection.db || !this.connection.isConnected) {
       throw new ZodDatabaseNotConnectedError();
@@ -110,6 +142,11 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     return this.connection.db;
   }
 
+  /**
+   * Ensures the database connection is established and returns the database instance.
+   * @returns Promise that resolves with the MongoDB database instance
+   * @throws ZodDatabaseNotConnectedError if the database connection cannot be established
+   */
   public async ensureDb(): Promise<Db> {
     if (!this.connection.db) {
       await this.retryGetDb();
@@ -117,6 +154,10 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     return this.connection.db!;
   }
 
+  /**
+   * Retries to get the database connection with a timeout.
+   * @throws ZodDatabaseNotConnectedError if the connection cannot be established within the timeout
+   */
   private async retryGetDb(): Promise<void> {
     if (!this.connection.isConnected) {
       await new Promise<void>((resolve, reject) => {
@@ -139,6 +180,10 @@ class ZodMongoDatabaseConnection extends EventEmitter {
     }
   }
 
+  /**
+   * Checks if the database is currently connected.
+   * @returns true if the database is connected, false otherwise
+   */
   public isConnected(): boolean {
     return this.connection.isConnected;
   }

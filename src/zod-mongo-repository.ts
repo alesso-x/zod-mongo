@@ -37,11 +37,21 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     this.schema = input.schema;
   }
 
+  /**
+   * Gets the MongoDB collection for this repository.
+   * @returns A promise that resolves to the MongoDB collection.
+   */
   async collection() {
     const db = await zodMongoDatabaseConnection.ensureDb();
     return db.collection<TSchema>(this.collectionName);
   }
 
+  /**
+   * Inserts a single document into the collection.
+   * @param input - The document to insert, validated against the schema.
+   * @param options - Optional MongoDB insert options.
+   * @returns A promise that resolves to an object containing the inserted document and the insert result.
+   */
   async insertOne(
     input: ZodMongoDocumentInput<TSchema>,
     options?: InsertOneOptions
@@ -62,6 +72,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return { doc, result };
   }
 
+  /**
+   * Inserts multiple documents into the collection.
+   * @param input - Array of documents to insert, each validated against the schema.
+   * @param options - Optional MongoDB bulk write options.
+   * @returns A promise that resolves to the insert many result.
+   */
   async insertMany(
     input: ZodMongoDocumentInput<TSchema>[],
     options?: BulkWriteOptions
@@ -83,6 +99,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     );
   }
 
+  /**
+   * Finds a single document in the collection.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB find options.
+   * @returns A promise that resolves to the found document or null if not found.
+   */
   async findOne(
     filter: StrictFilter<TSchema>,
     options?: Omit<FindOptions, "timeoutMode">
@@ -91,6 +113,13 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return collection.findOne(filter as Filter<TSchema>, options);
   }
 
+  /**
+   * Finds a single document in the collection and throws an error if not found.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB find options.
+   * @returns A promise that resolves to the found document.
+   * @throws {ZodDocumentNotFoundError} If no document is found.
+   */
   async findOneStrict(
     filter: StrictFilter<TSchema>,
     options?: Omit<FindOptions, "timeoutMode">
@@ -105,6 +134,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return result;
   }
 
+  /**
+   * Finds multiple documents in the collection.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB find options.
+   * @returns A promise that resolves to an array of found documents.
+   */
   async find(
     filter: StrictFilter<TSchema>,
     options?: FindOptions
@@ -114,6 +149,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return cursor.toArray();
   }
 
+  /**
+   * Returns a cursor for finding documents in the collection.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB find options.
+   * @returns A promise that resolves to a MongoDB cursor.
+   */
   async findCursor(
     filter: StrictFilter<TSchema>,
     options?: FindOptions
@@ -122,6 +163,13 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return collection.find(filter as Filter<TSchema>, options);
   }
 
+  /**
+   * Updates a single document in the collection.
+   * @param filter - The query filter to match documents.
+   * @param update - The update operations to perform.
+   * @param options - Optional MongoDB update options.
+   * @returns A promise that resolves to the update result.
+   */
   async updateOne(
     filter: StrictFilter<TSchema>,
     update: StrictUpdateFilter<TSchema>,
@@ -144,6 +192,13 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     );
   }
 
+  /**
+   * Updates multiple documents in the collection.
+   * @param filter - The query filter to match documents.
+   * @param update - The update operations to perform.
+   * @param options - Optional MongoDB update options.
+   * @returns A promise that resolves to the update result.
+   */
   async updateMany(
     filter: StrictFilter<TSchema>,
     update: StrictUpdateFilter<TSchema>,
@@ -166,6 +221,14 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     );
   }
 
+  /**
+   * Finds a document and updates it in one atomic operation.
+   * @param filter - The query filter to match documents.
+   * @param update - The update operations to perform.
+   * @param options - MongoDB find and update options.
+   * @returns A promise that resolves to the updated document.
+   * @throws {ZodDocumentNotFoundError} If no document is found.
+   */
   async findOneAndUpdate(
     filter: StrictFilter<TSchema>,
     update: StrictUpdateFilter<TSchema>,
@@ -197,6 +260,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return result;
   }
 
+  /**
+   * Deletes a single document from the collection.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB delete options.
+   * @returns A promise that resolves to the delete result.
+   */
   async deleteOne(
     filter: StrictFilter<TSchema>,
     options?: DeleteOptions
@@ -205,6 +274,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return collection.deleteOne(filter as Filter<TSchema>, options);
   }
 
+  /**
+   * Deletes multiple documents from the collection.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB delete options.
+   * @returns A promise that resolves to the delete result.
+   */
   async deleteMany(
     filter: StrictFilter<TSchema>,
     options?: DeleteOptions
@@ -213,6 +288,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     return collection.deleteMany(filter as Filter<TSchema>, options);
   }
 
+  /**
+   * Checks if any documents exist matching the given filter.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB count documents options.
+   * @returns A promise that resolves to true if documents exist, false otherwise.
+   */
   async exists(
     filter: StrictFilter<TSchema>,
     options?: CountDocumentsOptions
