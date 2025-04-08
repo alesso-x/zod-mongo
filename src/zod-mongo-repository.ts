@@ -3,6 +3,7 @@ import {
   type CountDocumentsOptions,
   type DeleteOptions,
   type DeleteResult,
+  DistinctOptions,
   type Document,
   type Filter,
   type FindCursor,
@@ -318,5 +319,25 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
   ): Promise<boolean> {
     const count = await this.countDocuments(filter, options);
     return count > 0;
+  }
+
+  /**
+   * Retrieves distinct values for a specified field in the collection.
+   * @param key - The field for which to return distinct values.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB distinct options.
+   * @returns A promise that resolves to an array of distinct values.
+   */
+  async distinct<Key extends keyof WithId<TSchema>>(
+    key: Key,
+    filter: StrictFilter<TSchema>,
+    options: DistinctOptions = {}
+  ): Promise<string[]> {
+    const collection = await this.collection();
+    return collection.distinct(
+      key as string,
+      filter as Filter<TSchema>,
+      options
+    );
   }
 }

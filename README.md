@@ -159,6 +159,7 @@ Standard MongoDB methods:
 - `deleteOne(filter, options?)`: Delete a single document
 - `deleteMany(filter, options?)`: Delete multiple documents
 - `countDocuments(filter, options?)`: Counts the number of documents
+- `distinct(key, filter, options?)`: Retrieves distinct values for a specified field
 
 Additional methods
 
