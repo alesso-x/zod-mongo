@@ -1,5 +1,7 @@
 # zod-mongo
 
+[![npm version](https://badge.fury.io/js/zod-mongo.svg)](https://badge.fury.io/js/zod-mongo)
+
 A thin wrapper around MongoDB that allows you to define your models using Zod schemas. This library provides type-safe MongoDB operations with runtime validation using Zod.
 
 ## Features
