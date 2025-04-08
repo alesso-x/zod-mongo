@@ -289,6 +289,24 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
   }
 
   /**
+   * Counts the number of documents in the collection that match the given filter.
+   * @param filter - The query filter to match documents.
+   * @param options - Optional MongoDB count documents options.
+   * @returns A promise that resolves to the number of documents that match the filter.
+   */
+  async countDocuments(
+    filter: StrictFilter<TSchema>,
+    options?: CountDocumentsOptions
+  ): Promise<number> {
+    const collection = await this.collection();
+    const count = await collection.countDocuments(
+      filter as Filter<TSchema>,
+      options
+    );
+    return count;
+  }
+
+  /**
    * Checks if any documents exist matching the given filter.
    * @param filter - The query filter to match documents.
    * @param options - Optional MongoDB count documents options.
@@ -298,11 +316,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     filter: StrictFilter<TSchema>,
     options?: CountDocumentsOptions
   ): Promise<boolean> {
-    const collection = await this.collection();
-    const count = await collection.countDocuments(
-      filter as Filter<TSchema>,
-      options
-    );
+    const count = await this.countDocuments(filter, options);
     return count > 0;
   }
 }
