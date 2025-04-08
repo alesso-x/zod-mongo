@@ -18,7 +18,10 @@
     "prepare": "pnpm build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "publish:major": "npm version major && npm publish",
+    "publish:patch": "npm version patch && npm publish",
+    "publish:minor": "npm version minor && npm publish"
   },
   "peerDependencies": {
     "mongodb": ">=6.0.0 <7.0.0",
