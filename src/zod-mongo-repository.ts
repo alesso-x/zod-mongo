@@ -3,7 +3,7 @@ import {
   type CountDocumentsOptions,
   type DeleteOptions,
   type DeleteResult,
-  DistinctOptions,
+  type DistinctOptions,
   type Document,
   type Filter,
   type FindCursor,
@@ -22,8 +22,8 @@ import {
   type WithId,
 } from "mongodb";
 import { z } from "zod";
-import { ZodMongoDatabaseConnection } from "./zod-mongo-database-connection";
 import { ZodDocumentNotFoundError } from "./errors";
+import { ZodMongoDatabaseConnection } from "./zod-mongo-database-connection";
 import { ZodMongoDocument, ZodMongoDocumentInput } from "./zod-mongo.types";
 
 export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
@@ -144,12 +144,26 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @param options - Optional MongoDB find options.
    * @returns A promise that resolves to an array of found documents.
    */
-  async findMany(
+  async findMany<Fields extends keyof TSchema>(
     filter: StrictFilter<TSchema>,
-    options?: FindOptions
+    options?: FindOptions & { fields?: Array<Fields> }
   ): Promise<WithId<TSchema>[]> {
     const collection = await this.collection();
     const cursor = collection.find(filter as Filter<TSchema>, options);
+
+    if (options?.fields) {
+      cursor.project(this.buildProjection(options.fields));
+    }
+    if (options?.sort) {
+      cursor.sort(options.sort);
+    }
+    if (options?.skip) {
+      cursor.skip(options.skip);
+    }
+    if (options?.limit) {
+      cursor.limit(options.limit);
+    }
+
     return cursor.toArray();
   }
 
@@ -342,5 +356,15 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
       filter as Filter<TSchema>,
       options
     );
+  }
+
+  private buildProjection(fields: Array<keyof TSchema>): {
+    [key in keyof TSchema]?: 1;
+  } {
+    const fieldObj: { [key in keyof TSchema]?: 1 } = {};
+    for (const field of fields) {
+      fieldObj[field] = 1;
+    }
+    return fieldObj;
   }
 }
