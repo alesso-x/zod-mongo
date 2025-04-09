@@ -48,6 +48,7 @@ const userSchema = z.object({
 const userRepository = new ZodMongoRepository({
   collectionName: "users",
   schema: userSchema,
+  timestamps: true, // Optional: Enable/disable automatic timestamp management (default: true)
 });
 
 // Create a user
@@ -66,6 +67,32 @@ await userRepository.updateOne(
   { $set: { age: 31 } }
 );
 ```
+
+## Timestamp Management
+
+The repository automatically manages `createdAt` and `updatedAt` timestamps for your documents. This behavior can be configured when creating the repository:
+
+```typescript
+// Disable automatic timestamp management
+const noTimestampsRepo = new ZodMongoRepository({
+  collectionName: "users",
+  schema: userSchema,
+  timestamps: false,
+});
+
+// Enable automatic timestamp management (default)
+const withTimestampsRepo = new ZodMongoRepository({
+  collectionName: "users",
+  schema: userSchema,
+  timestamps: true,
+});
+```
+
+When enabled, the repository will:
+
+- Set both `createdAt` and `updatedAt` when inserting new documents
+- Update `updatedAt` when modifying existing documents
+- Handle timestamps consistently across all operations (insert, update, findAndUpdate)
 
 ## MongoDB Connection
 

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** Until version 1.0.0, this project follows semantic versioning loosely, focusing on feature completeness and stability rather than strict adherence to breaking changes in minor versions.
 
+## [Unreleased]
+
+### Added
+
+- Configurable timestamp management with new `timestamps` option in repository constructor
+- New `TimestampManager` utility class for centralized timestamp handling
+- Documentation for timestamp configuration options
+- Enhanced `findMany` method with advanced options:
+  - Field projection for selective field retrieval
+  - Sorting capabilities
+  - Pagination support with limit and skip
+  - Comprehensive unit tests for new functionality
+
+### Changed
+
+- Refactored timestamp management to be more maintainable and configurable
+- Improved type safety in timestamp-related operations
+- Updated README with timestamp management documentation
+
 ## [0.1.3] - 2025-04-08
 
 ### Changed

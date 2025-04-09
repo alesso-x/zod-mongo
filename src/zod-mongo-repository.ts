@@ -23,19 +23,23 @@ import {
 } from "mongodb";
 import { z } from "zod";
 import { ZodDocumentNotFoundError } from "./errors";
+import { TimestampManager } from "./timestamp-manager";
 import { ZodMongoDatabaseConnection } from "./zod-mongo-database-connection";
 import { ZodMongoDocument, ZodMongoDocumentInput } from "./zod-mongo.types";
 
 export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
   protected collectionName: string;
   protected schema: z.ZodType<ZodMongoDocumentInput<TSchema>>;
+  protected timestamps: boolean;
 
   constructor(input: {
     collectionName: string;
     schema: z.ZodType<ZodMongoDocumentInput<TSchema>>;
+    timestamps?: boolean;
   }) {
     this.collectionName = input.collectionName;
     this.schema = input.schema;
+    this.timestamps = input.timestamps ?? true;
   }
 
   /**
@@ -58,12 +62,9 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     options?: InsertOneOptions
   ): Promise<{ doc: TSchema; result: InsertOneResult<TSchema> }> {
     const validated = this.schema.parse({ _id: new ObjectId(), ...input });
-
-    const doc = {
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...validated,
-    } as TSchema;
+    const doc = (
+      this.timestamps ? TimestampManager.addTimestamps(validated) : validated
+    ) as TSchema;
 
     const collection = await this.collection();
     const result = await collection.insertOne(
@@ -87,14 +88,9 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
       this.schema.parse({ _id: new ObjectId(), ...item })
     );
 
-    const createdAt = new Date();
-    const updatedAt = new Date();
-
-    const docs = validated.map((item) => ({
-      createdAt,
-      updatedAt,
-      ...item,
-    }));
+    const docs = this.timestamps
+      ? validated.map((item) => TimestampManager.addTimestamps(item))
+      : validated;
 
     const collection = await this.collection();
     return collection.insertMany(
@@ -193,13 +189,14 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     update: StrictUpdateFilter<TSchema>,
     options?: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
-    if ("$set" in update) {
-      (update.$set as any) = {
-        ...update.$set,
-        updatedAt: new Date(),
-      };
-    } else {
-      update = { $set: { updatedAt: new Date() } } as UpdateFilter<TSchema>;
+    if (this.timestamps) {
+      if ("$set" in update) {
+        update.$set = TimestampManager.updateTimestamp(update.$set);
+      } else {
+        update = {
+          $set: TimestampManager.updateTimestamp({}),
+        } as UpdateFilter<TSchema>;
+      }
     }
 
     const collection = await this.collection();
@@ -222,13 +219,14 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     update: StrictUpdateFilter<TSchema>,
     options?: UpdateOptions
   ): Promise<UpdateResult<TSchema>> {
-    if ("$set" in update) {
-      (update.$set as any) = {
-        ...update.$set,
-        updatedAt: new Date(),
-      };
-    } else {
-      update = { $set: { updatedAt: new Date() } } as UpdateFilter<TSchema>;
+    if (this.timestamps) {
+      if ("$set" in update) {
+        update.$set = TimestampManager.updateTimestamp(update.$set);
+      } else {
+        update = {
+          $set: TimestampManager.updateTimestamp({}),
+        } as UpdateFilter<TSchema>;
+      }
     }
 
     const collection = await this.collection();
@@ -252,20 +250,21 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     update: StrictUpdateFilter<TSchema>,
     options: FindOneAndUpdateOptions = {}
   ): Promise<WithId<TSchema>> {
-    if ("$set" in update) {
-      (update.$set as any) = {
-        ...update.$set,
-        updatedAt: new Date(),
-      };
-    } else {
-      update = { $set: { updatedAt: new Date() } } as UpdateFilter<TSchema>;
+    if (this.timestamps) {
+      if ("$set" in update) {
+        update.$set = TimestampManager.updateTimestamp(update.$set);
+      } else {
+        update = {
+          $set: TimestampManager.updateTimestamp({}),
+        } as UpdateFilter<TSchema>;
+      }
     }
 
     const collection = await this.collection();
     const result = await collection.findOneAndUpdate(
       filter as Filter<TSchema>,
       update as UpdateFilter<TSchema>,
-      options
+      { ...options, returnDocument: "after" }
     );
 
     if (!result) {
