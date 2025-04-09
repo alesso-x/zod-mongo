@@ -87,9 +87,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
       this.schema.parse({ _id: new ObjectId(), ...item })
     );
 
+    const createdAt = new Date();
+    const updatedAt = new Date();
+
     const docs = validated.map((item) => ({
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt,
+      updatedAt,
       ...item,
     }));
 
