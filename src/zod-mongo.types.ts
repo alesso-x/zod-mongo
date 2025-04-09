@@ -9,12 +9,12 @@ export type Timestamps = {
 };
 
 /**
- * Represents the input type for creating or updating a MongoDB document.
+ * Represents the schema for a MongoDB document.
  * This type omits the MongoDB-specific fields (_id, createdAt, updatedAt) from the base type T,
  * while allowing an optional _id field for cases where a specific ObjectId needs to be provided.
  * If _id is not provided, a new ObjectId will be generated.
  */
-export type ZodMongoDocumentInput<T> = Omit<T, "_id" | keyof Timestamps> & {
+export type ZodMongoSchema<T> = Omit<T, "_id" | keyof Timestamps> & {
   /** if not provided, the class will generate a new ObjectId */
   _id?: ObjectId;
 };

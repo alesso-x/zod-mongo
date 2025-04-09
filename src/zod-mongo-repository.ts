@@ -25,16 +25,51 @@ import { z } from "zod";
 import { ZodDocumentNotFoundError } from "./errors";
 import { TimestampManager } from "./timestamp-manager";
 import { ZodMongoDatabaseConnection } from "./zod-mongo-database-connection";
-import { ZodMongoDocument, ZodMongoDocumentInput } from "./zod-mongo.types";
+import { ZodMongoSchema, ZodMongoDocument } from "./zod-mongo.types";
 
+/**
+ * A type-safe MongoDB repository that uses Zod for input validation.
+ * This repository provides a strongly-typed interface for MongoDB operations
+ * while ensuring data validation through Zod schemas.
+ *
+ * @template TSchema - The complete MongoDB document type, including system fields.
+ *
+ * Example:
+ * ```typescript
+ * const userSchema = z.object({
+ *   name: z.string(),
+ *   email: z.string().email(),
+ *   age: z.number().optional(),
+ * });
+ *
+ * type UserSchema = z.infer<typeof userSchema>;
+ * type UserDocument = ZodMongoDocument<UserSchema>;
+ *
+ * const userRepo = new ZodMongoRepository<UserDocument>({
+ *   collectionName: 'users',
+ *   schema: userSchema,
+ *   timestamps: true,
+ * });
+ *
+ * // Type-safe document creation
+ * const newUser = await userRepo.insertOne({
+ *   name: 'John Doe',
+ *   email: 'john@example.com',
+ *   age: 30,
+ * });
+ *
+ * // Type-safe document retrieval
+ * const user = await userRepo.findOne({ email: 'john@example.com' });
+ * ```
+ */
 export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
   protected collectionName: string;
-  protected schema: z.ZodType<ZodMongoDocumentInput<TSchema>>;
+  protected schema: z.ZodType<ZodMongoSchema<TSchema>>;
   protected timestamps: boolean;
 
   constructor(input: {
     collectionName: string;
-    schema: z.ZodType<ZodMongoDocumentInput<TSchema>>;
+    schema: z.ZodType<ZodMongoSchema<TSchema>>;
     timestamps?: boolean;
   }) {
     this.collectionName = input.collectionName;
@@ -58,9 +93,12 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @returns A promise that resolves to an object containing the inserted document and the insert result.
    */
   async insertOne(
-    input: ZodMongoDocumentInput<TSchema>,
+    input: ZodMongoSchema<TSchema>,
     options?: InsertOneOptions
-  ): Promise<{ doc: TSchema; result: InsertOneResult<TSchema> }> {
+  ): Promise<{
+    doc: TSchema;
+    result: InsertOneResult<TSchema>;
+  }> {
     const validated = this.schema.parse({ _id: new ObjectId(), ...input });
     const doc = (
       this.timestamps ? TimestampManager.addTimestamps(validated) : validated
@@ -81,7 +119,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
    * @returns A promise that resolves to the insert many result.
    */
   async insertMany(
-    input: ZodMongoDocumentInput<TSchema>[],
+    input: ZodMongoSchema<TSchema>[],
     options?: BulkWriteOptions
   ): Promise<InsertManyResult<TSchema>> {
     const validated = input.map((item) =>
