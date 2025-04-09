@@ -250,7 +250,7 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
   async findOneAndUpdate(
     filter: StrictFilter<TSchema>,
     update: StrictUpdateFilter<TSchema>,
-    options: FindOneAndUpdateOptions
+    options: FindOneAndUpdateOptions = {}
   ): Promise<WithId<TSchema>> {
     if ("$set" in update) {
       (update.$set as any) = {

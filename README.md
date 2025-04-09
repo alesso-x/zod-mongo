@@ -164,7 +164,7 @@ Standard MongoDB methods:
 - `insertMany(input[], options?)`: Insert multiple documents
 - `findOne(filter, options?)`: Find a single document
 - `find(filter, options?)`: Get a cursor for streaming results
-- `findOneAndUpdate(filter, update, options)`: Find and update a document
+- `findOneAndUpdate(filter, update, options?)`: Find and update a document
 - `updateOne(filter, update, options?)`: Update a single document
 - `updateMany(filter, update, options?)`: Update multiple documents
 - `deleteOne(filter, options?)`: Delete a single document
