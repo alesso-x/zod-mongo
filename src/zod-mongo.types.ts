@@ -18,6 +18,8 @@ export type Timestamps = {
 export type ZodMongoSchema<T> = Omit<T, "_id" | keyof Timestamps> & {
   /** if not provided, the class will generate a new ObjectId */
   _id?: ObjectId;
+} & {
+  [K in keyof Timestamps]?: never;
 };
 
 /**

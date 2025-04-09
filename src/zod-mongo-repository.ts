@@ -99,9 +99,9 @@ export class ZodMongoRepository<TSchema extends ZodMongoDocument<Document>> {
     result: InsertOneResult<TSchema>;
   }> {
     const validated = this.schema.parse({ _id: new ObjectId(), ...input });
-    const doc = (
-      this.timestamps ? TimestampManager.addTimestamps(validated) : validated
-    ) as TSchema;
+    const doc = (this.timestamps
+      ? TimestampManager.addTimestamps(validated)
+      : validated) as unknown as TSchema;
 
     const collection = await this.collection();
     const result = await collection.insertOne(
