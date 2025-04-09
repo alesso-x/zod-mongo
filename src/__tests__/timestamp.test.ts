@@ -15,7 +15,7 @@ describe("Timestamp Management", () => {
   let repository: ZodMongoRepository<TestDocument>;
   let noTimestampsRepo: ZodMongoRepository<TestDocument>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     repository = new ZodMongoRepository({
       collectionName: "test_collection",
       schema: baseSchema,
@@ -27,6 +27,12 @@ describe("Timestamp Management", () => {
       schema: baseSchema,
       timestamps: false,
     });
+
+    // Clear collections before each test
+    const collection = await repository.collection();
+    await collection.deleteMany({});
+    const noTimestampsCollection = await noTimestampsRepo.collection();
+    await noTimestampsCollection.deleteMany({});
   });
 
   describe("insertOne", () => {
