@@ -42,8 +42,7 @@ import { ZodMongoSchema, ZodMongoDocument } from "./zod-mongo.types";
  *   age: z.number().optional(),
  * });
  *
- * type UserSchema = z.infer<typeof userSchema>;
- * type UserDocument = ZodMongoDocument<UserSchema>;
+ * type UserDocument = InferMongoDocument<typeof userSchema>;
  *
  * const userRepo = new ZodMongoRepository<UserDocument>({
  *   collectionName: 'users',

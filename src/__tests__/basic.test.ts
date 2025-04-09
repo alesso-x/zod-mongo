@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ZodMongoRepository, ZodMongoDocument } from "..";
+import { ZodMongoRepository, InferMongoDocument } from "..";
 
 // Define the base user schema
 const baseUserSchema = z.object({
@@ -9,7 +9,7 @@ const baseUserSchema = z.object({
 });
 
 // Define the complete user schema with MongoDB fields
-type UserDocument = ZodMongoDocument<z.infer<typeof baseUserSchema>>;
+type UserDocument = InferMongoDocument<typeof baseUserSchema>;
 
 describe("ZodMongoRepository", () => {
   let userRepository: ZodMongoRepository<UserDocument>;

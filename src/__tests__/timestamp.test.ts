@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { ZodMongoRepository } from "../zod-mongo-repository";
-import { ZodMongoDocument } from "../zod-mongo.types";
+import { ZodMongoRepository, InferMongoDocument } from "..";
 
 // Define test schemas
 const baseSchema = z.object({
@@ -9,7 +8,7 @@ const baseSchema = z.object({
   age: z.number().optional(),
 });
 
-type TestDocument = ZodMongoDocument<z.infer<typeof baseSchema>>;
+type TestDocument = InferMongoDocument<typeof baseSchema>;
 
 describe("Timestamp Management", () => {
   let repository: ZodMongoRepository<TestDocument>;

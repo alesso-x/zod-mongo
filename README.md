@@ -34,18 +34,19 @@ npm install zod mongodb
 
 ```typescript
 import { z } from "zod";
-import { ZodMongoRepository, ObjectId } from "zod-mongo";
+import { ZodMongoRepository, InferMongoDocument } from "zod-mongo";
 
 // Define your schema using Zod
 const userSchema = z.object({
-  _id: z.instanceof(ObjectId),
   name: z.string(),
   email: z.string().email(),
   age: z.number().optional(),
 });
 
+type UserDocument = InferMongoDocument<typeof userSchema>;
+
 // Create a repository
-const userRepository = new ZodMongoRepository({
+const userRepository = new ZodMongoRepository<UserDocument>({
   collectionName: "users",
   schema: userSchema,
   timestamps: true, // Optional: Enable/disable automatic timestamp management (default: true)
@@ -135,16 +136,15 @@ You can extend the `ZodMongoRepository` class to create custom repositories with
 
 ```typescript
 import { z } from "zod";
-import { ZodMongoDocument, ZodMongoRepository, ObjectId } from "zod-mongo";
+import { ZodMongoDocument, ZodMongoRepository } from "zod-mongo";
 
 // Define your schema
 const userProfileSchema = z.object({
-  _id: z.instanceof(ObjectId),
   userId: z.string(),
   hasCompletedOnboarding: z.boolean(),
 });
 
-type UserProfile = ZodMongoDocument<z.infer<typeof userProfileSchema>>;
+type UserProfile = InferMongoDocument<typeof userProfileSchema>;
 
 // Create a custom repository
 class UserProfileRepository extends ZodMongoRepository<UserProfile> {
