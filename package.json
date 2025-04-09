@@ -18,9 +18,9 @@
     "prepare": "pnpm build",
     "test": "jest --runInBand",
     "typecheck": "tsc --noEmit",
-    "publish:major": "npm version major && npm publish",
-    "publish:patch": "npm version patch && npm publish",
-    "publish:minor": "npm version minor && npm publish"
+    "publish:major": "npm version major && npm publish && git push --tags",
+    "publish:patch": "npm version patch && npm publish && git push --tags",
+    "publish:minor": "npm version minor && npm publish && git push --tags"
   },
   "peerDependencies": {
     "mongodb": ">=6.0.0 <7.0.0",
