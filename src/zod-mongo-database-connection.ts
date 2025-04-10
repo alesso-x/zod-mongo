@@ -15,6 +15,32 @@ interface DatabaseOptions {
   retryDelay?: number;
 }
 
+/**
+ * A singleton class that manages MongoDB database connections.
+ * This class provides a centralized way to handle database connections, including connection
+ * establishment, retry logic, and event-based connection monitoring.
+ *
+ * Features:
+ * - Singleton pattern to ensure a single database connection instance
+ * - Automatic connection retry with configurable attempts and delays
+ * - Event-based connection monitoring (connected, disconnected, error events)
+ * - Thread-safe database access through promise-based connection handling
+ * - Graceful disconnection and cleanup
+ *
+ * @example
+ * ```typescript
+ * // Setup the connection
+ * await ZodMongoDatabaseConnection.setup({
+ *   client: new MongoClient(uri),
+ *   dbName: 'myDatabase',
+ *   maxRetries: 5,
+ *   retryDelay: 1000
+ * });
+ *
+ * // Get the database instance
+ * const db = ZodMongoDatabaseConnection.getDb();
+ * ```
+ */
 class ZodMongoDatabaseConnectionClass extends EventEmitter {
   private static instance: ZodMongoDatabaseConnectionClass;
   private connection: MongoConnection = {

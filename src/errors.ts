@@ -30,6 +30,8 @@ export class ZodDocumentNotFoundError extends ZodMongoBaseError {
  */
 export class ZodDatabaseNotConnectedError extends ZodMongoBaseError {
   constructor() {
-    super("Database not connected. Call connect() first.");
+    super(
+      "Database not connected. Call ZodMongoDatabaseConnection.setup() first."
+    );
   }
 }

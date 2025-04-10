@@ -43,6 +43,7 @@ const userSchema = z.object({
   age: z.number().optional(),
 });
 
+// Infer the document type from the schema, including _id and timestamp fields
 type UserDocument = InferMongoDocument<typeof userSchema>;
 
 // Create a repository
@@ -214,14 +215,14 @@ In some cases, you might need to access the MongoDB collection directly to perfo
 const collection = await userRepository.collection();
 
 // Use the collection to perform MongoDB operations
-document = await collection.stats();
+const stats = await collection.stats();
 ```
 
 This method serves as an escape hatch for advanced use cases where you need more control over the MongoDB operations.
 
 ### Type Definitions
 
-- `ZodMongoDocumentInput<T>`: Input type for documents (excludes `_id`, `createdAt`, `updatedAt`)
+- `ZodMongoSchema<T>`: Input type for documents (excludes `_id`, `createdAt`, `updatedAt`)
 - `ZodMongoDocument<T>`: Complete document type including MongoDB fields
 
 ## Type Safety
